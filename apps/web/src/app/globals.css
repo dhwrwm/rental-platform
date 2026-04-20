@@ -1,0 +1,94 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  --background: oklch(0.2 0.035 205);
+  --foreground: oklch(0.97 0.012 106);
+  --card: oklch(0.98 0.01 98 / 0.94);
+  --card-foreground: oklch(0.28 0.03 205);
+  --popover: oklch(0.98 0.01 98);
+  --popover-foreground: oklch(0.28 0.03 205);
+  --primary: oklch(0.43 0.08 203);
+  --primary-foreground: oklch(0.98 0.008 100);
+  --secondary: oklch(0.31 0.03 200 / 0.42);
+  --secondary-foreground: oklch(0.97 0.012 106);
+  --muted: oklch(0.92 0.012 103 / 0.7);
+  --muted-foreground: oklch(0.64 0.03 200);
+  --accent: oklch(0.7 0.11 170);
+  --accent-foreground: oklch(0.2 0.03 205);
+  --destructive: oklch(0.62 0.19 25);
+  --border: oklch(0.83 0.018 196 / 0.22);
+  --input: oklch(1 0 0 / 0.76);
+  --ring: oklch(0.7 0.11 170);
+  --radius: 1.5rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 0.5rem);
+  --radius-md: calc(var(--radius) - 0.25rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.5rem);
+  --font-sans: "IBM Plex Sans", "Aptos", "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    @apply max-w-full overflow-x-hidden;
+  }
+
+  body {
+    @apply min-h-svh bg-background font-sans text-foreground antialiased;
+    background-image:
+      radial-gradient(
+        circle at top,
+        oklch(0.7 0.11 170 / 0.3),
+        transparent 24%
+      ),
+      radial-gradient(
+        circle at 18% 20%,
+        oklch(0.43 0.08 203 / 0.35),
+        transparent 28%
+      ),
+      linear-gradient(
+        160deg,
+        oklch(0.16 0.028 210) 0%,
+        oklch(0.2 0.035 205) 45%,
+        oklch(0.24 0.04 190) 100%
+      );
+  }
+
+  a {
+    @apply no-underline;
+    color: inherit;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+}
