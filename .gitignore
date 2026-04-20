@@ -29,6 +29,7 @@ build
 
 # prisma
 prisma/migrations
+apps/api/src/generated/prisma
 
 # docker
 docker-data
