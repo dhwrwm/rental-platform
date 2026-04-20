@@ -1,99 +1,63 @@
 # AGENTS.md
 
-## Purpose
+## 1. Project Charter
 
-This repository is a `pnpm` monorepo for a rental platform. It currently contains:
+This is a `pnpm` monorepo for a rental platform. The architecture emphasizes strict separation between business logic (NestJS) and persistence (Prisma). The goal is to maintain a type-safe, observable, and modular codebase.
 
-- `apps/api`: NestJS API with Prisma and Better Auth
-- `apps/web`: Next.js frontend
-- `packages/ui`: shared UI package
-- `packages/eslint-config`: shared lint config
-- `packages/typescript-config`: shared TypeScript config
+## 2. Core Policies
 
-Use this file as the default contributor/agent guide for making changes safely and consistently.
+- **Definition of Done:** All changes must be type-checked (`pnpm check-types`), linted (`pnpm lint`), and verified against existing patterns.
+- **Human-in-the-Loop:** - ⚠️ **Ask First:** Database schema migrations, dependency changes, or auth-guard modifications.
+  - 🚫 **Never:** Do not commit secrets, do not modify lockfiles manually, do not edit auto-generated Prisma files.
+- **Architectural Integrity:** If a change impacts the API-Client contract, the agent must propose updates to both the API and Web workspaces simultaneously.
 
-## Stack
+## 3. Operational Commands
 
-- Package manager: `pnpm`
-- Monorepo task runner: `turbo`
-- API: NestJS 11
-- Web: Next.js 16 / React 19
-- Database: PostgreSQL via Prisma 7
-- Auth: `better-auth` integrated into Nest via `@thallesp/nestjs-better-auth`
+_Use these as the primary interfaces for validation._
 
-## Repo Map
+| Action              | Command                                                    |
+| :------------------ | :--------------------------------------------------------- |
+| **Full Validation** | `pnpm build`                                               |
+| **API Suite**       | `pnpm --filter api build && pnpm --filter api test`        |
+| **Web Suite**       | `pnpm --filter web check-types && pnpm --filter web build` |
+| **Prisma Sync**     | `pnpm --filter api exec prisma generate`                   |
 
-- `apps/api/src/main.ts`: Nest bootstrap and CORS setup
-- `apps/api/src/app.module.ts`: Nest module wiring, including auth module setup
-- `apps/api/src/auth.ts`: Better Auth instance configuration
-- `apps/api/src/lib/prisma.ts`: Prisma client singleton using `@prisma/adapter-pg`
-- `apps/api/prisma/schema.prisma`: Prisma schema
-- `apps/web/app`: Next.js app router code
-- `apps/web/lib`: frontend helpers and shared web-side utilities
+## 4. Technical Guardrails
 
-## Common Commands
+### Prisma & Data Layer
 
-From the repo root:
+- **Client Singleton:** Always import the client from `apps/api/src/lib/prisma.ts`.
+- **Type Safety:** Never use `any`. Prisma generated types are the source of truth.
+- **Migrations:** Use `prisma migrate dev`. Do not manually edit the generated `prisma-client` folder.
 
-- Install deps: `pnpm install`
-- Run all apps: `pnpm dev`
-- Build all apps/packages: `pnpm build`
-- Run type checks: `pnpm check-types`
-- Run lint: `pnpm lint`
+### Auth Architecture
 
-Scoped commands:
+- **Better Auth:** Configured in `apps/api/src/auth.ts`.
+- **Guards:** Global auth is default. Use `@AllowAnonymous()` for public routes and `@OptionalAuth()` for flexible endpoints.
+- **Security:** Do not expose service keys on the frontend. Ensure RLS is verified during schema evolution.
 
-- API dev: `pnpm --filter api dev`
-- API build: `pnpm --filter api build`
-- API tests: `pnpm --filter api test`
-- Web dev: `pnpm --filter web dev`
-- Web build: `pnpm --filter web build`
-- Web type checks: `pnpm --filter web check-types`
+### Style & UI
 
-## Auth Notes
+- **Tailwind:** Use OKLCH tokens. No hardcoded hex values.
+- **Tokens:** Maintain the defined dark teal branding (`#004F4F`).
 
-- The API uses `@thallesp/nestjs-better-auth` through `AuthModule.forRoot(...)`.
-- Better Auth is configured in `apps/api/src/auth.ts`.
-- The auth guard is global by default.
-- Add `@AllowAnonymous()` to Nest routes that should be public.
-- Use `@OptionalAuth()` for routes that can work with or without a session.
+## 5. Agent Interaction Rules
 
-## Prisma Notes
+- **Proactive Validation:** If you touch a core service or auth policy, explain the impact on the existing codebase before execution.
+- **Commit Style:** Use `type(scope): description`. Append `[AI-assisted]` to all primary agent commits to maintain an audit trail of agent-vs-human contribution.
+- **State Management:** Prioritize `Tanstack Query` for all server-side state in the `web` app. Do not fetch directly in components.
 
-- Prisma client is generated into `apps/api/src/generated/prisma`.
-- The runtime client uses `@prisma/adapter-pg` in `apps/api/src/lib/prisma.ts`.
-- Do not hand-edit generated Prisma client files.
-- Keep schema changes in `apps/api/prisma/schema.prisma` and generate/migrate from the API workspace.
+## 6. Frontend Architecture (Feature-Based)
 
-Useful Prisma commands:
+All frontend development within `apps/web/` must follow the feature-based structure to ensure modularity.
 
-- `pnpm --filter api exec prisma validate --schema prisma/schema.prisma`
-- `pnpm --filter api exec prisma generate --schema prisma/schema.prisma`
-- `pnpm --filter api exec prisma migrate dev`
+### Directory Structure
 
-## Environment
-
-- API and web each have their own `.env` expectations.
-- Check the existing `.env.example` files before adding new variables.
-- Keep `API_URL`, `WEB_URL`, and `DATABASE_URL` aligned when working on auth flows.
-
-## Working Rules
-
-- Prefer small, targeted changes over broad refactors.
-- Preserve existing patterns unless there is a clear reason to improve them.
-- Avoid editing lockfiles manually.
-- Avoid editing generated output unless regeneration is impossible.
-- If you change API contracts, verify whether the web app also needs an update.
-- If you touch auth or Prisma setup, verify both startup and build paths when possible.
-
-## Validation Expectations
-
-- For API-only changes, prefer `pnpm --filter api build` and any relevant tests.
-- For web-only changes, prefer `pnpm --filter web build` or `pnpm --filter web check-types`.
-- For cross-cutting changes, run the smallest meaningful validation for each touched app.
-
-## Notes For Future Agents
-
-- This repo has active auth work in progress, so read current files before refactoring.
-- Better Auth and Prisma wiring are already partially customized; do not assume default scaffolding.
-- When in doubt, inspect the local package versions in `package.json` before applying cookbook examples.
+```text
+apps/web/src/features/{feature-name}/
+├── api/            # API hooks (Tanstack Query)
+├── components/     # Feature-specific UI components
+├── hooks/          # Feature-specific hooks
+├── types/          # Feature-specific TypeScript interfaces
+└── index.ts        # Public API (Barrel file)
+```

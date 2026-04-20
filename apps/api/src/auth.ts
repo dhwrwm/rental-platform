@@ -6,6 +6,24 @@ import { prisma } from './lib/prisma';
 const apiOrigin = process.env.API_URL ?? 'http://localhost:3001';
 const webOrigin = process.env.WEB_URL ?? 'http://localhost:3000';
 
+function splitName(name?: string | null) {
+  const trimmedName = name?.trim();
+
+  if (!trimmedName) {
+    return {
+      firstName: null,
+      lastName: null,
+    };
+  }
+
+  const [firstName, ...lastNameParts] = trimmedName.split(/\s+/);
+
+  return {
+    firstName,
+    lastName: lastNameParts.length > 0 ? lastNameParts.join(' ') : null,
+  };
+}
+
 export const auth = betterAuth({
   appName: 'Rental Platform',
   baseURL: apiOrigin,
@@ -19,11 +37,7 @@ export const auth = betterAuth({
   user: {
     modelName: 'User',
     additionalFields: {
-      firstName: {
-        type: 'string',
-        required: false,
-      },
-      lastName: {
+      name: {
         type: 'string',
         required: false,
       },

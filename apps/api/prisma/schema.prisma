@@ -7,9 +7,169 @@ datasource db {
   provider = "postgresql"
 }
 
-/**
- * ENUMS
- */
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  phone         String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  bookings      Booking[]
+  listings      Listing[]
+  sessions      Session[]
+  accounts      Account[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, value])
+}
+
+model Listing {
+  id                        String                @id @default(uuid())
+  slug                      String                @unique
+  title                     String
+  description               String?
+  longitude                 Float
+  latitude                  Float
+  address                   String
+  city                      String
+  state                     String
+  country                   String
+  isActive                  ListingStatus         @default(INACTIVE)
+  createdAt                 DateTime              @default(now())
+  updatedAt                 DateTime              @updatedAt
+  ownerId                   String
+  rooms                     Int
+  bedrooms                  Int
+  bathrooms                 Int?
+  capacity                  Int
+  amenities                 String[]
+  checkingInTime            String?
+  checkingOutTime           String?
+  basePrice                 Float
+  securityDepositPercentage Float?
+  cleaningFee               Float?
+  serviceFee                Float?
+  otherFees                 Float?
+  bookings                  Booking[]
+  owner                     User                  @relation(fields: [ownerId], references: [id])
+  availabilities            ListingAvailability[]
+  images                    ListingImage[]
+}
+
+model ListingImage {
+  id        String  @id @default(uuid())
+  listingId String
+  url       String
+  order     Int
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model ListingAvailability {
+  id                 String             @id @default(uuid())
+  fromDate           DateTime
+  toDate             DateTime
+  availabilityStatus AvailabilityStatus @default(AVAILABLE)
+  listingId          String
+  price              Float
+  listing            Listing            @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model Booking {
+  id           String        @id @default(cuid())
+  listingId    String
+  renterId     String
+  checkIn      DateTime
+  checkOut     DateTime
+  totalPrice   Int
+  status       BookingStatus @default(PENDING)
+  listing      Listing       @relation(fields: [listingId], references: [id])
+  renter       User          @relation(fields: [renterId], references: [id])
+  bookingPrice BookingPrice?
+  lease        Lease?
+  payment      Payment?
+}
+
+model BookingPrice {
+  id                        String   @id @default(uuid())
+  bookingId                 String   @unique
+  checkIn                   DateTime
+  checkOut                  DateTime
+  basePrice                 Float
+  securityDepositPercentage Float?
+  cleaningFee               Float?
+  serviceFee                Float?
+  otherFees                 Float?
+  taxes                     Float?
+  discount                  Float?
+  totalPrice                Float
+  priceBreakdown            Json?
+  createdAt                 DateTime @default(now())
+  booking                   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+model Lease {
+  id               String             @id @default(uuid())
+  bookingId        String             @unique
+  leaseDocumentUrl String?
+  signedAt         DateTime?
+  paymentStatus    LeasePaymentStatus @default(UNPAID)
+  payoutStatus     PayoutStatus       @default(PENDING)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  booking          Booking            @relation(fields: [bookingId], references: [id])
+}
+
+model Payment {
+  id        String        @id @default(uuid())
+  bookingId String        @unique
+  amount    Float
+  status    PaymentStatus
+  provider  String
+  createdAt DateTime      @default(now())
+  booking   Booking       @relation(fields: [bookingId], references: [id])
+}
 
 enum Role {
   USER
@@ -49,233 +209,4 @@ enum LeasePaymentStatus {
 enum PayoutStatus {
   PENDING
   PAID
-}
-
-// =======================
-// USER
-// =======================
-
-model User {
-  id            String    @id @default(uuid())
-  name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
-  image         String?
-  firstName     String?
-  lastName      String?
-  phone         String?
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  //Relations
-
-  listings Listing[]
-
-  bookings Booking[]
-  sessions Session[]
-  accounts Account[]
-}
-
-model Session {
-  id        String   @id @default(uuid())
-  token     String   @unique
-  expiresAt DateTime
-  ipAddress String?
-  userAgent String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Account {
-  id                    String    @id @default(uuid())
-  accountId             String
-  providerId            String
-  accessToken           String?
-  refreshToken          String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  idToken               String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([providerId, accountId])
-}
-
-model Verification {
-  id         String   @id @default(uuid())
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@unique([identifier, value])
-}
-
-// =======================
-// LISTING
-// =======================
-
-model Listing {
-  id          String  @id @default(uuid())
-  slug        String  @unique
-  title       String
-  description String?
-
-  longitude Float
-  latitude  Float
-  address   String
-  city      String
-  state     String
-  country   String
-
-  isActive  ListingStatus @default(INACTIVE)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-
-  ownerId String
-  owner   User   @relation(fields: [ownerId], references: [id])
-
-  // property details
-  rooms           Int
-  bedrooms        Int
-  bathrooms       Int?
-  capacity        Int
-  amenities       String[]
-  checkingInTime  String?
-  checkingOutTime String?
-  images          ListingImage[]
-  availabilities  ListingAvailability[]
-  bookings        Booking[]
-
-  //Pricing details
-  basePrice                 Float
-  securityDepositPercentage Float?
-  cleaningFee               Float?
-  serviceFee                Float?
-  otherFees                 Float?
-}
-
-// =======================
-// LISTING IMAGES
-// =======================
-
-model ListingImage {
-  id        String @id @default(uuid())
-  listingId String
-  url       String
-  order     Int
-
-  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
-}
-
-// =======================
-// AVAILABILITY
-// =======================
-
-model ListingAvailability {
-  id                 String             @id @default(uuid())
-  fromDate           DateTime
-  toDate             DateTime
-  availabilityStatus AvailabilityStatus @default(AVAILABLE)
-
-  price Float // optional override
-
-  listingId String
-  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
-}
-
-// =======================
-// BOOKING
-// =======================    
-
-model Booking {
-  id        String @id @default(cuid())
-  listingId String
-  renterId  String
-
-  checkIn  DateTime
-  checkOut DateTime
-
-  totalPrice   Int
-  bookingPrice BookingPrice?
-  // Locked pricing snapshot
-
-  status BookingStatus @default(PENDING)
-
-  listing Listing @relation(fields: [listingId], references: [id])
-  renter  User    @relation(fields: [renterId], references: [id])
-
-  lease   Lease?
-  payment Payment?
-}
-
-model BookingPrice {
-  id String @id @default(uuid())
-
-  bookingId String @unique
-
-  checkIn  DateTime
-  checkOut DateTime
-
-  basePrice                 Float
-  securityDepositPercentage Float?
-  cleaningFee               Float?
-  serviceFee                Float?
-  otherFees                 Float?
-  taxes                     Float?
-  discount                  Float?
-  totalPrice                Float
-  priceBreakdown            Json?
-
-  createdAt DateTime @default(now())
-  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-}
-
-// =======================
-// LEASES
-// =======================
-
-model Lease {
-  id        String @id @default(uuid())
-  bookingId String @unique
-
-  leaseDocumentUrl String?
-  signedAt         DateTime?
-
-  paymentStatus LeasePaymentStatus @default(UNPAID)
-  payoutStatus  PayoutStatus       @default(PENDING)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  booking Booking @relation(fields: [bookingId], references: [id])
-}
-
-// =======================
-// PAYMENTS
-// =======================
-
-model Payment {
-  id        String @id @default(uuid())
-  bookingId String @unique
-
-  amount   Float
-  status   PaymentStatus
-  provider String // Stripe / Razorpay
-
-  createdAt DateTime @default(now())
-
-  // Relations
-  booking Booking @relation(fields: [bookingId], references: [id])
 }
