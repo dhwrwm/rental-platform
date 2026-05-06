@@ -69,7 +69,7 @@ export function DashboardHome() {
     <main className="px-6 py-6 sm:px-8">
       <section className="mx-auto grid min-h-[calc(100svh-3rem)] w-full max-w-7xl gap-6 xl:grid-cols-[minmax(0,1.2fr)_24rem]">
         <div className="space-y-6">
-          <div className="rounded-[2rem] border border-border/70 bg-card/70 p-8 shadow-sm">
+          <div className="rounded-4xl border border-border/70 bg-card/70 p-8 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-normal text-foreground/75">
               Dashboard
             </p>
@@ -104,6 +104,15 @@ export function DashboardHome() {
                 <CardDescription>
                   Add host inventory, adjust pricing, and review occupancy.
                 </CardDescription>
+                <Link
+                  className={cn(
+                    buttonVariants({ size: "default", variant: "secondary" }),
+                    "mt-3 w-fit",
+                  )}
+                  href="/dashboard/listings"
+                >
+                  Manage listings
+                </Link>
               </CardHeader>
             </Card>
             <Card>
