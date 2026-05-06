@@ -63,7 +63,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         }
       }
 
-      router.push("/");
+      router.push("/dashboard");
       router.refresh();
     } catch (caughtError) {
       setError(

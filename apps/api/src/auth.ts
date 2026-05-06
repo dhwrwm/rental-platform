@@ -1,30 +1,14 @@
 import 'dotenv/config';
 import { prismaAdapter } from '@better-auth/prisma-adapter';
-import { betterAuth } from 'better-auth';
+import { betterAuth, type BetterAuthOptions } from 'better-auth';
+import { admin } from 'better-auth/plugins/admin';
+import { adminAc, userAc } from 'better-auth/plugins/admin/access';
 import { prisma } from './lib/prisma';
 
 const apiOrigin = process.env.API_URL ?? 'http://localhost:3001';
 const webOrigin = process.env.WEB_URL ?? 'http://localhost:3000';
 
-function splitName(name?: string | null) {
-  const trimmedName = name?.trim();
-
-  if (!trimmedName) {
-    return {
-      firstName: null,
-      lastName: null,
-    };
-  }
-
-  const [firstName, ...lastNameParts] = trimmedName.split(/\s+/);
-
-  return {
-    firstName,
-    lastName: lastNameParts.length > 0 ? lastNameParts.join(' ') : null,
-  };
-}
-
-export const auth = betterAuth({
+const authOptions = {
   appName: 'Rental Platform',
   baseURL: apiOrigin,
   trustedOrigins: [webOrigin],
@@ -34,22 +18,24 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  plugins: [
+    admin({
+      defaultRole: 'USER',
+      adminRoles: ['ADMIN'],
+      roles: {
+        ADMIN: adminAc,
+        USER: userAc,
+        HOMEOWNER: userAc,
+        AGENT: userAc,
+      },
+    }),
+  ],
   user: {
     modelName: 'User',
     additionalFields: {
-      name: {
-        type: 'string',
-        required: false,
-      },
       phone: {
         type: 'string',
         required: false,
-      },
-      role: {
-        type: ['USER', 'ADMIN', 'HOMEOWNER', 'AGENT'],
-        required: false,
-        defaultValue: 'USER',
-        input: false,
       },
     },
   },
@@ -62,4 +48,8 @@ export const auth = betterAuth({
   verification: {
     modelName: 'Verification',
   },
-});
+} satisfies BetterAuthOptions;
+
+export const auth = betterAuth(authOptions) as unknown as ReturnType<
+  typeof betterAuth
+>;

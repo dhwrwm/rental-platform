@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button, buttonVariants } from "@components/ui/button";
+import { useEffect } from "react";
+import { buttonVariants } from "@components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,18 +17,42 @@ import { authClient } from "../api/auth-client";
 export function SessionHome() {
   const router = useRouter();
   const { data, error, isPending } = authClient.useSession();
-
-  async function handleSignOut() {
-    const result = await authClient.signOut();
-
-    if (result.error) {
-      return;
-    }
-
-    router.refresh();
-  }
-
   const user = data?.user;
+
+  useEffect(() => {
+    if (!isPending && user) {
+      router.replace("/dashboard");
+    }
+  }, [isPending, router, user]);
+
+  if (isPending || user) {
+    return (
+      <main className="px-6 py-6 sm:px-8">
+        <section className="mx-auto flex min-h-[calc(100svh-3rem)] max-w-7xl items-center justify-center">
+          <Card className="w-full max-w-lg border-white/15 bg-card/88">
+            <CardHeader>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+                Session status
+              </p>
+              <CardTitle>
+                {isPending ? "Checking session..." : "Opening dashboard..."}
+              </CardTitle>
+              {error ? (
+                <CardDescription className="text-destructive">
+                  {error.message}
+                </CardDescription>
+              ) : (
+                <CardDescription>
+                  Signed-in users are redirected straight to their protected
+                  dashboard.
+                </CardDescription>
+              )}
+            </CardHeader>
+          </Card>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="px-6 py-6 sm:px-8">
@@ -47,28 +72,17 @@ export function SessionHome() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            {user ? (
-              <Button onClick={handleSignOut} size="lg" type="button">
-                Sign out
-              </Button>
-            ) : (
-              <>
-                <Link
-                  className={cn(buttonVariants({ size: "lg" }))}
-                  href="/signup"
-                >
-                  Create account
-                </Link>
-                <Link
-                  className={cn(
-                    buttonVariants({ size: "lg", variant: "secondary" }),
-                  )}
-                  href="/login"
-                >
-                  Log in
-                </Link>
-              </>
-            )}
+            <Link className={cn(buttonVariants({ size: "lg" }))} href="/signup">
+              Create account
+            </Link>
+            <Link
+              className={cn(
+                buttonVariants({ size: "lg", variant: "secondary" }),
+              )}
+              href="/login"
+            >
+              Log in
+            </Link>
           </div>
 
           <div className="grid gap-4 xl:grid-cols-3">
@@ -107,7 +121,6 @@ export function SessionHome() {
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
               Session status
             </p>
-            {isPending ? <CardTitle>Checking session...</CardTitle> : null}
             {error ? (
               <CardDescription className="text-destructive">
                 {error.message}
@@ -115,29 +128,7 @@ export function SessionHome() {
             ) : null}
           </CardHeader>
           <CardContent>
-            {user ? (
-              <>
-                <CardTitle>{user.name}</CardTitle>
-                <dl className="mt-6 grid gap-4">
-                  <div className="grid gap-1 border-t border-border/80 pt-4">
-                    <dt className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                      Email
-                    </dt>
-                    <dd className="text-sm text-card-foreground">
-                      {user.email}
-                    </dd>
-                  </div>
-                  <div className="grid gap-1 border-t border-border/80 pt-4">
-                    <dt className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                      Email verified
-                    </dt>
-                    <dd className="text-sm text-card-foreground">
-                      {user.emailVerified ? "Verified" : "Pending verification"}
-                    </dd>
-                  </div>
-                </dl>
-              </>
-            ) : isPending ? null : (
+            {
               <>
                 <CardTitle>No active session</CardTitle>
                 <CardDescription className="mt-3 text-sm leading-7">
@@ -145,7 +136,7 @@ export function SessionHome() {
                   between `apps/web` and `apps/api`.
                 </CardDescription>
               </>
-            )}
+            }
           </CardContent>
         </Card>
       </section>
