@@ -2,23 +2,23 @@
 @import "tw-animate-css";
 
 :root {
-  --background: oklch(0.2 0.035 205);
-  --foreground: oklch(0.97 0.012 106);
-  --card: oklch(0.98 0.01 98 / 0.94);
-  --card-foreground: oklch(0.28 0.03 205);
-  --popover: oklch(0.98 0.01 98);
-  --popover-foreground: oklch(0.28 0.03 205);
-  --primary: oklch(0.43 0.08 203);
-  --primary-foreground: oklch(0.98 0.008 100);
-  --secondary: oklch(0.31 0.03 200 / 0.42);
-  --secondary-foreground: oklch(0.97 0.012 106);
-  --muted: oklch(0.92 0.012 103 / 0.7);
-  --muted-foreground: oklch(0.64 0.03 200);
-  --accent: oklch(0.7 0.11 170);
-  --accent-foreground: oklch(0.2 0.03 205);
+  --background: oklch(0.985 0.008 190);
+  --foreground: oklch(0.24 0.038 205);
+  --card: oklch(1 0 0 / 0.92);
+  --card-foreground: oklch(0.24 0.038 205);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.24 0.038 205);
+  --primary: oklch(0.39 0.074 203);
+  --primary-foreground: oklch(0.99 0.004 100);
+  --secondary: oklch(0.93 0.02 196);
+  --secondary-foreground: oklch(0.28 0.05 203);
+  --muted: oklch(0.94 0.012 196);
+  --muted-foreground: oklch(0.48 0.035 205);
+  --accent: oklch(0.72 0.12 170);
+  --accent-foreground: oklch(0.22 0.035 205);
   --destructive: oklch(0.62 0.19 25);
-  --border: oklch(0.83 0.018 196 / 0.22);
-  --input: oklch(1 0 0 / 0.76);
+  --border: oklch(0.83 0.025 196 / 0.72);
+  --input: oklch(1 0 0 / 0.96);
   --ring: oklch(0.7 0.11 170);
   --radius: 1.5rem;
 }
@@ -65,20 +65,20 @@
     @apply min-h-svh bg-background font-sans text-foreground antialiased;
     background-image:
       radial-gradient(
-        circle at top,
-        oklch(0.7 0.11 170 / 0.3),
+        circle at 12% 0%,
+        oklch(0.72 0.12 170 / 0.2),
         transparent 24%
       ),
       radial-gradient(
-        circle at 18% 20%,
-        oklch(0.43 0.08 203 / 0.35),
-        transparent 28%
+        circle at 92% 12%,
+        oklch(0.78 0.085 75 / 0.18),
+        transparent 26%
       ),
       linear-gradient(
         160deg,
-        oklch(0.16 0.028 210) 0%,
-        oklch(0.2 0.035 205) 45%,
-        oklch(0.24 0.04 190) 100%
+        oklch(0.99 0.006 190) 0%,
+        oklch(0.975 0.012 180) 50%,
+        oklch(0.955 0.018 205) 100%
       );
   }
 

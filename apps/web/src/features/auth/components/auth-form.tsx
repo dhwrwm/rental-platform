@@ -79,11 +79,11 @@ export function AuthForm({ mode }: AuthFormProps) {
   return (
     <section className="mx-auto grid min-h-svh w-full max-w-6xl items-center gap-10 px-6 py-10 lg:grid-cols-[minmax(0,1.15fr)_28rem] lg:px-8">
       <div className="space-y-6 text-foreground">
-        <p className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-foreground/90 backdrop-blur-sm">
+        <p className="inline-flex rounded-full border border-border bg-card/80 px-4 py-2 text-xs font-semibold uppercase tracking-normal text-foreground/80 shadow-sm">
           Rental Platform
         </p>
         <div className="space-y-4">
-          <h1 className="max-w-xl text-5xl font-semibold tracking-[-0.08em] sm:text-6xl lg:text-7xl">
+          <h1 className="max-w-xl text-5xl font-semibold tracking-normal sm:text-6xl lg:text-7xl">
             {isLogin ? "Welcome back" : "Create your account"}
           </h1>
           <p className="max-w-2xl text-base leading-8 text-foreground/72 sm:text-lg">
@@ -93,7 +93,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-[1.5rem] border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
+          <div className="rounded-3xl border border-border/70 bg-card/70 p-5 shadow-sm">
             <p className="text-sm font-medium text-foreground/70">
               Why this matters
             </p>
@@ -102,7 +102,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               host, and operations flows.
             </p>
           </div>
-          <div className="rounded-[1.5rem] border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
+          <div className="rounded-3xl border border-border/70 bg-card/70 p-5 shadow-sm">
             <p className="text-sm font-medium text-foreground/70">
               UI direction
             </p>
@@ -114,7 +114,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         </div>
       </div>
 
-      <Card className="overflow-hidden border-white/15 bg-card/92">
+      <Card className="overflow-hidden">
         <CardHeader className="pb-4">
           <CardTitle>{isLogin ? "Log in" : "Create your profile"}</CardTitle>
           <CardDescription>

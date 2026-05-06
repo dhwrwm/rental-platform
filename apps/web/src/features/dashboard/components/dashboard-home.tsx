@@ -40,9 +40,9 @@ export function DashboardHome() {
     return (
       <main className="px-6 py-6 sm:px-8">
         <section className="mx-auto flex min-h-[calc(100svh-3rem)] max-w-7xl items-center justify-center">
-          <Card className="w-full max-w-lg border-white/15 bg-card/88">
+          <Card className="w-full max-w-lg">
             <CardHeader>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+              <p className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
                 Dashboard access
               </p>
               <CardTitle>
@@ -54,7 +54,8 @@ export function DashboardHome() {
                 </CardDescription>
               ) : (
                 <CardDescription>
-                  We&apos;re confirming your session before loading the dashboard.
+                  We&apos;re confirming your session before loading the
+                  dashboard.
                 </CardDescription>
               )}
             </CardHeader>
@@ -68,11 +69,11 @@ export function DashboardHome() {
     <main className="px-6 py-6 sm:px-8">
       <section className="mx-auto grid min-h-[calc(100svh-3rem)] w-full max-w-7xl gap-6 xl:grid-cols-[minmax(0,1.2fr)_24rem]">
         <div className="space-y-6">
-          <div className="rounded-[2rem] border border-white/12 bg-white/10 p-8 backdrop-blur-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-foreground/75">
+          <div className="rounded-[2rem] border border-border/70 bg-card/70 p-8 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-normal text-foreground/75">
               Dashboard
             </p>
-            <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-[-0.08em] sm:text-5xl lg:text-6xl">
+            <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-normal sm:text-5xl lg:text-6xl">
               Welcome back, {user.name}.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-8 text-foreground/72 sm:text-lg">
@@ -97,7 +98,7 @@ export function DashboardHome() {
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
-            <Card className="border-white/12 bg-white/8 backdrop-blur-sm">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Listings</CardTitle>
                 <CardDescription>
@@ -105,7 +106,7 @@ export function DashboardHome() {
                 </CardDescription>
               </CardHeader>
             </Card>
-            <Card className="border-white/12 bg-white/8 backdrop-blur-sm">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Bookings</CardTitle>
                 <CardDescription>
@@ -113,7 +114,7 @@ export function DashboardHome() {
                 </CardDescription>
               </CardHeader>
             </Card>
-            <Card className="border-white/12 bg-white/8 backdrop-blur-sm">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Profile</CardTitle>
                 <CardDescription>
@@ -125,9 +126,9 @@ export function DashboardHome() {
           </div>
         </div>
 
-        <Card className="h-fit border-white/15 bg-card/88">
+        <Card className="h-fit">
           <CardHeader>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
               Session details
             </p>
             <CardTitle>{user.email}</CardTitle>
@@ -139,19 +140,19 @@ export function DashboardHome() {
           <CardContent>
             <dl className="grid gap-4">
               <div className="grid gap-1 border-t border-border/80 pt-4">
-                <dt className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                <dt className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
                   Full name
                 </dt>
                 <dd className="text-sm text-card-foreground">{user.name}</dd>
               </div>
               <div className="grid gap-1 border-t border-border/80 pt-4">
-                <dt className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                <dt className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
                   Email
                 </dt>
                 <dd className="text-sm text-card-foreground">{user.email}</dd>
               </div>
               <div className="grid gap-1 border-t border-border/80 pt-4">
-                <dt className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                <dt className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
                   Verification
                 </dt>
                 <dd className="text-sm text-card-foreground">

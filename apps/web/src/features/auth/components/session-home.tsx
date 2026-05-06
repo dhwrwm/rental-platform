@@ -29,9 +29,9 @@ export function SessionHome() {
     return (
       <main className="px-6 py-6 sm:px-8">
         <section className="mx-auto flex min-h-[calc(100svh-3rem)] max-w-7xl items-center justify-center">
-          <Card className="w-full max-w-lg border-white/15 bg-card/88">
+          <Card className="w-full max-w-lg">
             <CardHeader>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+              <p className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
                 Session status
               </p>
               <CardTitle>
@@ -59,10 +59,10 @@ export function SessionHome() {
       <section className="mx-auto grid min-h-[calc(100svh-3rem)] w-full max-w-7xl items-center gap-8 lg:grid-cols-[minmax(0,1.3fr)_26rem]">
         <div className="space-y-8 text-foreground">
           <div className="space-y-5">
-            <p className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-foreground/90 backdrop-blur-sm">
+            <p className="inline-flex rounded-full border border-border bg-card/80 px-4 py-2 text-xs font-semibold uppercase tracking-normal text-foreground/80 shadow-sm">
               Rental Platform
             </p>
-            <h1 className="max-w-3xl text-5xl font-semibold tracking-[-0.08em] sm:text-6xl lg:text-8xl">
+            <h1 className="max-w-3xl text-5xl font-semibold tracking-normal sm:text-6xl lg:text-8xl">
               Short stays, long leases, one account.
             </h1>
             <p className="max-w-2xl text-base leading-8 text-foreground/72 sm:text-lg">
@@ -86,7 +86,7 @@ export function SessionHome() {
           </div>
 
           <div className="grid gap-4 xl:grid-cols-3">
-            <div className="rounded-[1.5rem] border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
+            <div className="rounded-[1.5rem] border border-border/70 bg-card/70 p-5 shadow-sm">
               <p className="text-sm font-medium text-foreground/70">
                 Design system
               </p>
@@ -95,7 +95,7 @@ export function SessionHome() {
                 can grow with the product.
               </p>
             </div>
-            <div className="rounded-[1.5rem] border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
+            <div className="rounded-[1.5rem] border border-border/70 bg-card/70 p-5 shadow-sm">
               <p className="text-sm font-medium text-foreground/70">
                 Auth state
               </p>
@@ -104,7 +104,7 @@ export function SessionHome() {
                 client session checks.
               </p>
             </div>
-            <div className="rounded-[1.5rem] border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
+            <div className="rounded-[1.5rem] border border-border/70 bg-card/70 p-5 shadow-sm">
               <p className="text-sm font-medium text-foreground/70">
                 Brand tokens
               </p>
@@ -116,9 +116,9 @@ export function SessionHome() {
           </div>
         </div>
 
-        <Card className="border-white/15 bg-card/88">
+        <Card>
           <CardHeader className="pb-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
               Session status
             </p>
             {error ? (
