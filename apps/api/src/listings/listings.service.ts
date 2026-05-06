@@ -56,7 +56,6 @@ const listingSelect = {
       fromDate: true,
       toDate: true,
       availabilityStatus: true,
-      price: true,
     },
     orderBy: {
       fromDate: 'asc',

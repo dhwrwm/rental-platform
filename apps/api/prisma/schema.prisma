@@ -23,7 +23,7 @@ model User {
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
+
   bookings      Booking[]
   listings      Listing[]
   sessions      Session[]
@@ -115,11 +115,10 @@ model ListingImage {
 
 model ListingAvailability {
   id                 String             @id @default(uuid())
-  fromDate           DateTime
-  toDate             DateTime
+  fromDate           String
+  toDate             String
   availabilityStatus AvailabilityStatus @default(AVAILABLE)
   listingId          String
-  price              Float
   listing            Listing            @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
 

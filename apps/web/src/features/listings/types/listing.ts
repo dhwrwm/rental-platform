@@ -19,7 +19,6 @@ export type ListingAvailability = {
   fromDate: string;
   toDate: string;
   availabilityStatus: string;
-  price: number;
 };
 
 export type Listing = {

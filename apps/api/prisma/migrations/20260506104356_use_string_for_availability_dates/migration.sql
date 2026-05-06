@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "ListingAvailability" ALTER COLUMN "fromDate" SET DATA TYPE TEXT,
+ALTER COLUMN "toDate" SET DATA TYPE TEXT;
