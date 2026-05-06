@@ -1,159 +1,154 @@
-# Turborepo starter
+# Rental Platform
 
-This Turborepo starter is maintained by the Turborepo core team.
+A `pnpm` Turborepo monorepo for a rental platform with a NestJS API, Prisma persistence, Better Auth authentication, and a Next.js web app.
 
-## Using this example
+## Documentation
 
-Run the following command:
+- [Listing Rental Platform Notion documentation](https://www.notion.so/Listing-Rental-Platform-230a542905d48058b386fc3c55f60d84?source=copy_link)
 
-```sh
-npx create-turbo@latest
-```
+## Apps
 
-## What's inside?
+- `apps/api`: NestJS API, Better Auth, Prisma, PostgreSQL
+- `apps/web`: Next.js web app with feature-based frontend modules
+- `packages/ui`: shared UI package placeholder
+- `packages/eslint-config`: shared ESLint configuration
+- `packages/typescript-config`: shared TypeScript configuration
 
-This Turborepo includes the following packages/apps:
+## Requirements
 
-### Apps and Packages
+- Node.js `>=20.9.0` for the Next.js web app
+- `pnpm`
+- PostgreSQL database
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## Setup
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Install dependencies:
 
 ```sh
-cd my-turborepo
-turbo build
+pnpm install
 ```
 
-Without global `turbo`, use your package manager:
+Create API env file:
 
 ```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+cp apps/api/.env.example apps/api/.env
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Create web env file:
 
 ```sh
-turbo build --filter=docs
+cp apps/web/.env.example apps/web/.env
 ```
 
-Without global `turbo`:
+Generate Prisma client:
 
 ```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+pnpm --filter api exec prisma generate
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Run database migrations:
 
 ```sh
-cd my-turborepo
-turbo dev
+pnpm --filter api exec prisma migrate dev
 ```
 
-Without global `turbo`, use your package manager:
+## Environment
+
+`apps/api/.env`:
 
 ```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/rental_platform"
+API_URL="http://localhost:3001"
+WEB_URL="http://localhost:3000"
+PORT="3001"
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+`apps/web/.env`:
 
 ```sh
-turbo dev --filter=web
+NEXT_PUBLIC_API_URL="http://localhost:3001"
 ```
 
-Without global `turbo`:
+## Development
+
+Run all dev servers:
 
 ```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+pnpm dev
 ```
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Run only the API:
 
 ```sh
-cd my-turborepo
-turbo login
+pnpm --filter api dev
 ```
 
-Without global `turbo`, use your package manager:
+Run only the web app:
 
 ```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
+pnpm --filter web dev
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Default local URLs:
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+- Web: `http://localhost:3000`
+- API: `http://localhost:3001`
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Validation
+
+Run the full build:
 
 ```sh
-turbo link
+pnpm build
 ```
 
-Without global `turbo`:
+Run type checks:
 
 ```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
+pnpm check-types
 ```
 
-## Useful Links
+Run lint:
 
-Learn more about the power of Turborepo:
+```sh
+pnpm lint
+```
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Run the API suite:
+
+```sh
+pnpm --filter api build
+pnpm --filter api test
+```
+
+Run the web suite:
+
+```sh
+pnpm --filter web check-types
+pnpm --filter web build
+```
+
+## Architecture Notes
+
+- Business logic lives in the NestJS API.
+- Persistence access goes through Prisma and the shared Prisma service/client.
+- Auth is handled by Better Auth in `apps/api/src/auth.ts`.
+- Public API routes should use `@AllowAnonymous()`.
+- Protected write routes should use role guards where appropriate.
+- Frontend features live under `apps/web/src/features/{feature-name}`.
+- Server-side state in the web app should live in feature API/hooks, not directly in page components.
+
+## Listings
+
+Listings are managed through:
+
+- API: `apps/api/src/listings`
+- Web feature: `apps/web/src/features/listings`
+- Dashboard page: `apps/web/src/app/dashboard/listings/page.tsx`
+
+Current listing behavior:
+
+- Public reads: `GET /api/listings`, `GET /api/listings/:id`
+- Protected writes: `POST`, `PATCH`, and `DELETE /api/listings`
+- Slugs are generated by the API from `title` and `address`
+- Dashboard users can add, update, and delete listings from the web app
