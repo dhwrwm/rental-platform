@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import { Alert } from "@components/ui/alert";
-import { Button, buttonVariants } from "@components/ui/button";
+import { Button } from "@components/ui/button";
 import {
   Card,
   CardContent,
@@ -24,6 +23,7 @@ import { Input } from "@components/ui/input";
 import { Label } from "@components/ui/label";
 import { Select } from "@components/ui/select";
 import { Textarea } from "@components/ui/textarea";
+import { AuthenticatedHeader } from "@features/auth";
 import { authClient } from "@features/auth/api/auth-client";
 import { cn } from "@lib/utils";
 import { useListings } from "../hooks/use-listings";
@@ -246,7 +246,8 @@ export function ListingsManager() {
 
   return (
     <main className="px-6 py-6 sm:px-8">
-      <section className="mx-auto grid w-full max-w-7xl gap-6">
+      <AuthenticatedHeader />
+      <section className="mx-auto mt-6 grid w-full max-w-7xl gap-6">
         <div className="space-y-6">
           <div className="rounded-4xl border border-border/70 bg-card/70 p-8 shadow-sm">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
@@ -266,12 +267,6 @@ export function ListingsManager() {
                 <Button onClick={startAdding} type="button">
                   Add listing
                 </Button>
-                <Link
-                  className={cn(buttonVariants({ variant: "secondary" }))}
-                  href="/dashboard"
-                >
-                  Back to dashboard
-                </Link>
               </div>
             </div>
           </div>

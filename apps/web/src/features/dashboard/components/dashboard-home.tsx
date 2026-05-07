@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Button, buttonVariants } from "@components/ui/button";
+import { buttonVariants } from "@components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@components/ui/card";
 import { cn } from "@lib/utils";
+import { AuthenticatedHeader } from "@features/auth";
 import { authClient } from "@features/auth/api/auth-client";
 
 export function DashboardHome() {
@@ -24,17 +25,6 @@ export function DashboardHome() {
       router.replace("/login");
     }
   }, [isPending, router, user]);
-
-  async function handleSignOut() {
-    const result = await authClient.signOut();
-
-    if (result.error) {
-      return;
-    }
-
-    router.replace("/");
-    router.refresh();
-  }
 
   if (isPending || !user) {
     return (
@@ -67,7 +57,8 @@ export function DashboardHome() {
 
   return (
     <main className="px-6 py-6 sm:px-8">
-      <section className="mx-auto grid min-h-[calc(100svh-3rem)] w-full max-w-7xl gap-6 xl:grid-cols-[minmax(0,1.2fr)_24rem]">
+      <AuthenticatedHeader />
+      <section className="mx-auto mt-6 grid min-h-[calc(100svh-3rem)] w-full max-w-7xl gap-6 xl:grid-cols-[minmax(0,1.2fr)_24rem]">
         <div className="space-y-6">
           <div className="rounded-4xl border border-border/70 bg-card/70 p-8 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-normal text-foreground/75">
@@ -81,20 +72,6 @@ export function DashboardHome() {
               Better Auth session, so this page is only available to signed-in
               users.
             </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button onClick={handleSignOut} size="lg" type="button">
-                Sign out
-              </Button>
-              <Link
-                className={cn(
-                  buttonVariants({ size: "lg", variant: "secondary" }),
-                )}
-                href="/"
-              >
-                Back to landing page
-              </Link>
-            </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
@@ -109,7 +86,7 @@ export function DashboardHome() {
                     buttonVariants({ size: "default", variant: "secondary" }),
                     "mt-3 w-fit",
                   )}
-                  href="/dashboard/listings"
+                  href="/listings"
                 >
                   Manage listings
                 </Link>
