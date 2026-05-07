@@ -61,6 +61,18 @@ const listingSelect = {
       fromDate: 'asc',
     },
   },
+  rates: {
+    select: {
+      id: true,
+      fromDate: true,
+      toDate: true,
+      price: true,
+      note: true,
+    },
+    orderBy: {
+      fromDate: 'asc',
+    },
+  },
   _count: {
     select: {
       bookings: true,

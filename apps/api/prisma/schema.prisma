@@ -103,6 +103,7 @@ model Listing {
   owner                     User                  @relation(fields: [ownerId], references: [id])
   availabilities            ListingAvailability[]
   images                    ListingImage[]
+  rates                     ListingRate[]
 }
 
 model ListingImage {
@@ -120,6 +121,18 @@ model ListingAvailability {
   availabilityStatus AvailabilityStatus @default(AVAILABLE)
   listingId          String
   listing            Listing            @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model ListingRate {
+  id        String   @id @default(uuid())
+  fromDate  DateTime
+  toDate    DateTime
+  price     Float
+  note      String?
+  listingId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
 
 model Booking {
