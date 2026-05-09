@@ -9,6 +9,7 @@ import { ListingAvailabilityModule } from './listing-availability/listing-availa
 import { ListingRatesModule } from './listing-rates/listing-rates.module';
 import { ListingsModule } from './listings/listings.module';
 import { UsersModule } from './users/users.module';
+import { BookingsModule } from './bookings/bookings.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UsersModule } from './users/users.module';
     ListingAvailabilityModule,
     ListingRatesModule,
     ListingsModule,
+    BookingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

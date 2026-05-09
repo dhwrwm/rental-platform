@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { AllowAnonymous, Roles } from '@thallesp/nestjs-better-auth';
 import { CreateRateDto } from './dto/create-rate.dto';
-import { QuoteRateDto } from './dto/quote-rate.dto';
 import { RateItemParamsDto } from './dto/rate-item-params.dto';
 import { RateParamsDto } from './dto/rate-params.dto';
 import { UpdateRateDto } from './dto/update-rate.dto';
@@ -38,13 +37,6 @@ export class ListingRatesController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   create(@Param() params: RateParamsDto, @Body() body: CreateRateDto) {
     return this.listingRatesService.create(params.listingId, body);
-  }
-
-  @AllowAnonymous()
-  @Post('quote')
-  @UsePipes(new ValidationPipe({ whitelist: true }))
-  quote(@Param() params: RateParamsDto, @Body() body: QuoteRateDto) {
-    return this.listingRatesService.quote(params.listingId, body);
   }
 
   @Roles(['ADMIN', 'AGENT'])

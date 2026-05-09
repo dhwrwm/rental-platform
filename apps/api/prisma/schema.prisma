@@ -176,8 +176,8 @@ model Booking {
   listing Listing @relation(fields: [listingId], references: [id])
   renter  User    @relation(fields: [renterId], references: [id])
 
-  bookingPriceid String
-  bookingPrice   BookingPrice @relation(fields: [bookingPriceid], references: [id], onDelete: Cascade)
+  bookingPriceId String        @unique
+  bookingPrice   BookingPrice @relation(fields: [bookingPriceId], references: [id],onDelete: Cascade )
 
   lease   Lease?
   payment Payment?
@@ -187,13 +187,15 @@ model Booking {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  @@unique([listingId, renterId, checkIn, checkOut])
+
   @@index([listingId, checkIn, checkOut])
 }
 
 model BookingPrice {
   id                        String   @id @default(uuid())
+
   bookingId                 String   @unique
+
   checkIn                   DateTime
   checkOut                  DateTime
   basePrice                 Float
@@ -210,7 +212,7 @@ model BookingPrice {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  bookings Booking[]
+  booking Booking?
 }
 
 model Lease {
