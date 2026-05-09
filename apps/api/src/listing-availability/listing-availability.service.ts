@@ -7,14 +7,7 @@ import { toUtcDate } from '../common/date/to-utc-date';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
-
-const availabilitySelect = {
-  id: true,
-  fromDate: true,
-  toDate: true,
-  availabilityStatus: true,
-  listingId: true,
-} as const;
+import { availabilitySelect } from './listing-availability.select';
 
 @Injectable()
 export class ListingAvailabilityService {
@@ -86,19 +79,6 @@ export class ListingAvailabilityService {
     };
   }
 
-  private async ensureListingExists(listingId: string) {
-    const listing = await this.prismaService.client.listing.findUnique({
-      where: { id: listingId },
-      select: { id: true },
-    });
-
-    if (!listing) {
-      throw new NotFoundException('Listing not found');
-    }
-
-    return listing;
-  }
-
   private async findAvailability(listingId: string, availabilityId: string) {
     const availability =
       await this.prismaService.client.listingAvailability.findFirst({
@@ -114,6 +94,19 @@ export class ListingAvailabilityService {
     }
 
     return availability;
+  }
+
+  private async ensureListingExists(listingId: string) {
+    const listing = await this.prismaService.client.listing.findUnique({
+      where: { id: listingId },
+      select: { id: true },
+    });
+
+    if (!listing) {
+      throw new NotFoundException('Listing not found');
+    }
+
+    return listing;
   }
 
   private parseDateRange(fromDate: string | Date, toDate: string | Date) {

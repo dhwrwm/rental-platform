@@ -7,28 +7,7 @@ import { toUtcDate } from '../common/date/to-utc-date';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { CreateRateDto } from './dto/create-rate.dto';
 import { UpdateRateDto } from './dto/update-rate.dto';
-
-const rateSelect = {
-  id: true,
-  date: true,
-  nightlyRate: true,
-  note: true,
-  listingId: true,
-  createdAt: true,
-  updatedAt: true,
-  overriddenAt: true,
-} as const;
-
-const rateBatchSelect = {
-  id: true,
-  fromDate: true,
-  toDate: true,
-  price: true,
-  note: true,
-  listingId: true,
-  createdAt: true,
-  updatedAt: true,
-} as const;
+import { rateBatchSelect, rateSelect } from './listing-rates.select';
 
 @Injectable()
 export class ListingRatesService {
@@ -187,19 +166,6 @@ export class ListingRatesService {
     };
   }
 
-  private async ensureListingExists(listingId: string) {
-    const listing = await this.prismaService.client.listing.findUnique({
-      where: { id: listingId },
-      select: { id: true },
-    });
-
-    if (!listing) {
-      throw new NotFoundException('Listing not found');
-    }
-
-    return listing;
-  }
-
   private async findRate(listingId: string, rateId: string) {
     const rate = await this.prismaService.client.listingRateBatch.findFirst({
       where: {
@@ -214,6 +180,19 @@ export class ListingRatesService {
     }
 
     return rate;
+  }
+
+  private async ensureListingExists(listingId: string) {
+    const listing = await this.prismaService.client.listing.findUnique({
+      where: { id: listingId },
+      select: { id: true },
+    });
+
+    if (!listing) {
+      throw new NotFoundException('Listing not found');
+    }
+
+    return listing;
   }
 
   private parseDateRange(fromDate: string, toDate: string) {

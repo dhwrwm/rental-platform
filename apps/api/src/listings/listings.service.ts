@@ -1,98 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
-import { Prisma, Role } from '../generated/prisma';
+import { Role } from '../generated/prisma';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
-
-const listingSelect = {
-  id: true,
-  slug: true,
-  title: true,
-  description: true,
-  longitude: true,
-  latitude: true,
-  address: true,
-  city: true,
-  state: true,
-  country: true,
-  isActive: true,
-  createdAt: true,
-  updatedAt: true,
-  ownerId: true,
-  rooms: true,
-  bedrooms: true,
-  bathrooms: true,
-  capacity: true,
-  amenities: true,
-  checkingInTime: true,
-  checkingOutTime: true,
-  basePrice: true,
-  securityDepositPercentage: true,
-  cleaningFee: true,
-  serviceFee: true,
-  otherFees: true,
-  owner: {
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      phone: true,
-      role: true,
-    },
-  },
-  images: {
-    select: {
-      id: true,
-      url: true,
-      order: true,
-    },
-    orderBy: {
-      order: 'asc',
-    },
-  },
-  availabilities: {
-    select: {
-      id: true,
-      fromDate: true,
-      toDate: true,
-      availabilityStatus: true,
-    },
-    orderBy: {
-      fromDate: 'asc',
-    },
-  },
-  rates: {
-    select: {
-      id: true,
-      date: true,
-      nightlyRate: true,
-      note: true,
-      overriddenAt: true,
-    },
-    orderBy: {
-      date: 'asc',
-    },
-  },
-  rateBatches: {
-    select: {
-      id: true,
-      fromDate: true,
-      toDate: true,
-      price: true,
-      note: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-    orderBy: {
-      fromDate: 'asc',
-    },
-  },
-  _count: {
-    select: {
-      bookings: true,
-    },
-  },
-} as const;
+import { listingSelect, ListingWithRelations } from './listings.select';
 
 @Injectable()
 export class ListingsService {
@@ -240,7 +151,3 @@ export class ListingsService {
     return Boolean(listing);
   }
 }
-
-type ListingWithRelations = Prisma.ListingGetPayload<{
-  select: typeof listingSelect;
-}>;
