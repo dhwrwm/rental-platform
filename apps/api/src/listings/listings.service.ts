@@ -64,10 +64,24 @@ const listingSelect = {
   rates: {
     select: {
       id: true,
+      date: true,
+      nightlyRate: true,
+      note: true,
+      overriddenAt: true,
+    },
+    orderBy: {
+      date: 'asc',
+    },
+  },
+  rateBatches: {
+    select: {
+      id: true,
       fromDate: true,
       toDate: true,
       price: true,
       note: true,
+      createdAt: true,
+      updatedAt: true,
     },
     orderBy: {
       fromDate: 'asc',

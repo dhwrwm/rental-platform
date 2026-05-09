@@ -3,11 +3,23 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { toUtcDate } from '../../common/date/to-utc-date';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { CreateRateDto } from './dto/create-rate.dto';
 import { UpdateRateDto } from './dto/update-rate.dto';
 
 const rateSelect = {
+  id: true,
+  date: true,
+  nightlyRate: true,
+  note: true,
+  listingId: true,
+  createdAt: true,
+  updatedAt: true,
+  overriddenAt: true,
+} as const;
+
+const rateBatchSelect = {
   id: true,
   fromDate: true,
   toDate: true,
@@ -25,9 +37,9 @@ export class ListingRatesService {
   async findAll(listingId: string) {
     await this.ensureListingExists(listingId);
 
-    return this.prismaService.client.listingRate.findMany({
+    return this.prismaService.client.listingRateBatch.findMany({
       where: { listingId },
-      select: rateSelect,
+      select: rateBatchSelect,
       orderBy: {
         fromDate: 'asc',
       },
@@ -39,46 +51,136 @@ export class ListingRatesService {
   }
 
   async create(listingId: string, dto: CreateRateDto) {
+    console.log({ listingId, dto });
     await this.ensureListingExists(listingId);
-    this.ensureValidDateRange(dto.fromDate, dto.toDate);
+    const range = this.parseDateRange(dto.fromDate, dto.toDate);
 
-    return this.prismaService.client.listingRate.create({
-      data: {
-        fromDate: dto.fromDate,
-        toDate: dto.toDate,
-        price: dto.price,
-        note: dto.note,
-        listingId,
-      },
-      select: rateSelect,
+    return this.prismaService.client.$transaction(async (tx) => {
+      const batch = await tx.listingRateBatch.create({
+        data: {
+          fromDate: range.fromDate,
+          toDate: range.toDate,
+          price: dto.price,
+          note: dto.note,
+          listingId,
+        },
+        select: rateBatchSelect,
+      });
+
+      const dailyRates = await Promise.all(
+        this.eachDateInRange(range.fromDate, range.toDate).map((date) =>
+          tx.listingRate.upsert({
+            where: {
+              listingId_date: {
+                listingId,
+                date,
+              },
+            },
+            create: {
+              date,
+              nightlyRate: dto.price,
+              note: dto.note,
+              listingId,
+            },
+            update: {
+              nightlyRate: dto.price,
+              note: dto.note,
+              overriddenAt: new Date(),
+            },
+            select: rateSelect,
+          }),
+        ),
+      );
+
+      return {
+        ...batch,
+        dailyRates,
+      };
     });
   }
 
   async update(listingId: string, rateId: string, dto: UpdateRateDto) {
     const rate = await this.findRate(listingId, rateId);
-    const fromDate = dto.fromDate ?? rate.fromDate.toISOString();
-    const toDate = dto.toDate ?? rate.toDate.toISOString();
+    const range = this.parseDateRange(
+      dto.fromDate ?? rate.fromDate.toISOString(),
+      dto.toDate ?? rate.toDate.toISOString(),
+    );
+    const price = dto.price ?? rate.price;
+    const note = Object.prototype.hasOwnProperty.call(dto, 'note')
+      ? dto.note
+      : rate.note;
 
-    this.ensureValidDateRange(fromDate, toDate);
+    return this.prismaService.client.$transaction(async (tx) => {
+      await tx.listingRate.deleteMany({
+        where: {
+          listingId,
+          date: {
+            gte: rate.fromDate,
+            lt: rate.toDate,
+          },
+        },
+      });
 
-    return this.prismaService.client.listingRate.update({
-      where: { id: rateId },
-      data: {
-        fromDate: dto.fromDate,
-        toDate: dto.toDate,
-        price: dto.price,
-        note: dto.note,
-      },
-      select: rateSelect,
+      const batch = await tx.listingRateBatch.update({
+        where: { id: rateId },
+        data: {
+          fromDate: range.fromDate,
+          toDate: range.toDate,
+          price,
+          note,
+        },
+        select: rateBatchSelect,
+      });
+
+      const dailyRates = await Promise.all(
+        this.eachDateInRange(range.fromDate, range.toDate).map((date) =>
+          tx.listingRate.upsert({
+            where: {
+              listingId_date: {
+                listingId,
+                date,
+              },
+            },
+            create: {
+              date,
+              nightlyRate: price,
+              note,
+              listingId,
+            },
+            update: {
+              nightlyRate: price,
+              note,
+              overriddenAt: new Date(),
+            },
+            select: rateSelect,
+          }),
+        ),
+      );
+
+      return {
+        ...batch,
+        dailyRates,
+      };
     });
   }
 
   async remove(listingId: string, rateId: string) {
-    await this.findRate(listingId, rateId);
+    const rate = await this.findRate(listingId, rateId);
 
-    await this.prismaService.client.listingRate.delete({
-      where: { id: rateId },
-    });
+    await this.prismaService.client.$transaction([
+      this.prismaService.client.listingRate.deleteMany({
+        where: {
+          listingId,
+          date: {
+            gte: rate.fromDate,
+            lt: rate.toDate,
+          },
+        },
+      }),
+      this.prismaService.client.listingRateBatch.delete({
+        where: { id: rateId },
+      }),
+    ]);
 
     return {
       success: true,
@@ -99,24 +201,50 @@ export class ListingRatesService {
   }
 
   private async findRate(listingId: string, rateId: string) {
-    const rate = await this.prismaService.client.listingRate.findFirst({
+    const rate = await this.prismaService.client.listingRateBatch.findFirst({
       where: {
         id: rateId,
         listingId,
       },
-      select: rateSelect,
+      select: rateBatchSelect,
     });
 
     if (!rate) {
-      throw new NotFoundException('Listing rate not found');
+      throw new NotFoundException('Listing rate batch not found');
     }
 
     return rate;
   }
 
-  private ensureValidDateRange(fromDate: string, toDate: string) {
-    if (new Date(fromDate) >= new Date(toDate)) {
+  private parseDateRange(fromDate: string, toDate: string) {
+    const parsedFromDate = toUtcDate(fromDate);
+    const parsedToDate = toUtcDate(toDate);
+
+    if (parsedFromDate >= parsedToDate) {
       throw new BadRequestException('fromDate must be before toDate');
     }
+
+    return {
+      fromDate: parsedFromDate,
+      toDate: parsedToDate,
+    };
+  }
+
+  private eachDateInRange(fromDate: Date, toDate: Date) {
+    const dates: Date[] = [];
+    let currentDate = new Date(fromDate);
+
+    while (currentDate < toDate) {
+      dates.push(new Date(currentDate));
+      currentDate = new Date(
+        Date.UTC(
+          currentDate.getUTCFullYear(),
+          currentDate.getUTCMonth(),
+          currentDate.getUTCDate() + 1,
+        ),
+      );
+    }
+
+    return dates;
   }
 }

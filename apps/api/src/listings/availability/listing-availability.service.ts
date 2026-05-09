@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { toUtcDate } from '../../common/date/to-utc-date';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
@@ -39,12 +40,12 @@ export class ListingAvailabilityService {
 
   async create(listingId: string, dto: CreateAvailabilityDto) {
     await this.ensureListingExists(listingId);
-    this.ensureValidDateRange(dto.fromDate, dto.toDate);
+    const range = this.parseDateRange(dto.fromDate, dto.toDate);
 
     return this.prismaService.client.listingAvailability.create({
       data: {
-        fromDate: dto.fromDate,
-        toDate: dto.toDate,
+        fromDate: range.fromDate,
+        toDate: range.toDate,
         availabilityStatus: dto.availabilityStatus,
         listingId,
       },
@@ -60,14 +61,13 @@ export class ListingAvailabilityService {
     const availability = await this.findAvailability(listingId, availabilityId);
     const fromDate = dto.fromDate ?? availability.fromDate;
     const toDate = dto.toDate ?? availability.toDate;
-
-    this.ensureValidDateRange(fromDate, toDate);
+    const range = this.parseDateRange(fromDate, toDate);
 
     return this.prismaService.client.listingAvailability.update({
       where: { id: availabilityId },
       data: {
-        fromDate: dto.fromDate,
-        toDate: dto.toDate,
+        fromDate: dto.fromDate === undefined ? undefined : range.fromDate,
+        toDate: dto.toDate === undefined ? undefined : range.toDate,
         availabilityStatus: dto.availabilityStatus,
       },
       select: availabilitySelect,
@@ -116,9 +116,17 @@ export class ListingAvailabilityService {
     return availability;
   }
 
-  private ensureValidDateRange(fromDate: string, toDate: string) {
-    if (new Date(fromDate) >= new Date(toDate)) {
+  private parseDateRange(fromDate: string | Date, toDate: string | Date) {
+    const parsedFromDate = toUtcDate(fromDate);
+    const parsedToDate = toUtcDate(toDate);
+
+    if (parsedFromDate >= parsedToDate) {
       throw new BadRequestException('fromDate must be before toDate');
     }
+
+    return {
+      fromDate: parsedFromDate.toISOString(),
+      toDate: parsedToDate.toISOString(),
+    };
   }
 }
