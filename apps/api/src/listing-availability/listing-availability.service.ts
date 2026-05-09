@@ -3,8 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { toUtcDate } from '../../common/date/to-utc-date';
-import { PrismaService } from '../../common/prisma/prisma.service';
+import { toUtcDate } from '../common/date/to-utc-date';
+import { PrismaService } from '../common/prisma/prisma.service';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 

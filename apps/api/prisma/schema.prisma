@@ -163,18 +163,32 @@ model ListingRateBatch {
 }
 
 model Booking {
-  id           String        @id @default(cuid())
-  listingId    String
-  renterId     String
-  checkIn      DateTime
-  checkOut     DateTime
-  totalPrice   Int
-  status       BookingStatus @default(PENDING)
-  listing      Listing       @relation(fields: [listingId], references: [id])
-  renter       User          @relation(fields: [renterId], references: [id])
-  bookingPrice BookingPrice?
-  lease        Lease?
-  payment      Payment?
+  id        String @id @default(cuid())
+  listingId String
+  renterId  String
+
+  checkIn     DateTime
+  checkOut    DateTime
+  guestsCount Int
+  totalPrice  Int
+  status      BookingStatus @default(PENDING)
+
+  listing Listing @relation(fields: [listingId], references: [id])
+  renter  User    @relation(fields: [renterId], references: [id])
+
+  bookingPriceid String
+  bookingPrice   BookingPrice @relation(fields: [bookingPriceid], references: [id], onDelete: Cascade)
+
+  lease   Lease?
+  payment Payment?
+
+  bookedAt    DateTime?
+  cancelledAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([listingId, renterId, checkIn, checkOut])
+  @@index([listingId, checkIn, checkOut])
 }
 
 model BookingPrice {
@@ -190,9 +204,13 @@ model BookingPrice {
   taxes                     Float?
   discount                  Float?
   totalPrice                Float
-  priceBreakdown            Json?
-  createdAt                 DateTime @default(now())
-  booking                   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  priceBreakdown Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings Booking[]
 }
 
 model Lease {

@@ -1,5 +1,5 @@
 import { IsDateString, IsEnum, IsOptional } from 'class-validator';
-import { AvailabilityStatus } from '../../../generated/prisma';
+import { AvailabilityStatus } from '../../generated/prisma';
 
 export class UpdateAvailabilityDto {
   @IsOptional()

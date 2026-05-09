@@ -1,5 +1,5 @@
 import { IsDateString, IsDefined, IsEnum } from 'class-validator';
-import { AvailabilityStatus } from '../../../generated/prisma';
+import { AvailabilityStatus } from '../../generated/prisma';
 
 export class CreateAvailabilityDto {
   @IsDefined({ message: 'fromDate is required' })

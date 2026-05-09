@@ -5,8 +5,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { auth } from './auth';
 import { PrismaModule } from './common/prisma/prisma.module';
-import { UsersModule } from './users/users.module';
+import { ListingAvailabilityModule } from './listing-availability/listing-availability.module';
+import { ListingRatesModule } from './listing-rates/listing-rates.module';
 import { ListingsModule } from './listings/listings.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { ListingsModule } from './listings/listings.module';
         },
       },
     }),
+    ListingAvailabilityModule,
+    ListingRatesModule,
     ListingsModule,
   ],
   controllers: [AppController],
