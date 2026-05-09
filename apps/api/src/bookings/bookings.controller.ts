@@ -6,7 +6,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
+import { AllowAnonymous, Roles } from '@thallesp/nestjs-better-auth';
 import { CreateBookingDto } from './dto/create-booking-dto';
 import { QuoteBookingDto } from './dto/quote-booking.dto';
 import { BookingsService } from './bookings.service';
@@ -20,6 +20,7 @@ export class BookingsController {
     return this.bookingsService.findAll();
   }
 
+  @Roles(['USER'])
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true }))
   create(@Body() body: CreateBookingDto) {
